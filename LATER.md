@@ -106,6 +106,9 @@ None of these are Phase 1 work. Listed so they aren't a surprise later.
   disclosure section above.
 - **Does a swipe change the buyer's agency-side status?** A no-swipe is
   feedback on one property; it shouldn't move someone out of the pipeline.
+  Related and now settled: a buyer can update their own criteria directly from
+  the portal, and the engine may prompt them to. See the recommendation layer
+  section.
 - **What does the agent see when a buyer goes quiet in the app?** Engagement is
   the selling point, so silence is probably a signal worth surfacing.
 - **Consent.** Phase 4 consent is agency-held for email and SMS. Portal consent
@@ -188,6 +191,79 @@ to $110,000 or three times the agent's commission, whichever is higher.
   Phase 2 work at the earliest — REAXML feeds carry some of it.
 - **Phase 6 impact:** if the buyer portal shows listings with prices, that is
   advertising, and the disclosure rules attach to it.
+
+---
+
+## The recommendation layer (the "algorithm")
+
+The founder wants matching to go beyond a strict filter: to sometimes suggest
+something outside a buyer's stated comfort zone, and to learn what a buyer
+actually responds to. **"I want it sort of all mixed. I want it to be
+powerful."**
+
+**Not Phase 1.** This is a layer on top of the matching engine, and the engine
+has to be right first.
+
+### The principle that has to survive
+
+Powerful and explainable are **not opposites**. The brief's own diagnosis of
+why CRM matching fails is that results are "a filtered list with no
+explanation, so agents don't trust them". What destroys trust is an
+*unexplained* suggestion, not an ambitious one.
+
+So the rule for everything below: **every suggestion carries its plain-English
+reason, the same as every ordinary match.** "8% over their stretch, but it has
+the pool they wanted" is both powerful and defensible to a buyer. "We think
+you'll like this" is not.
+
+### Decided with the founder
+
+- **Mixed into the main ranked list**, not hidden in a separate section — but
+  appearing **less often** than true matches, and always **labelled** as
+  outside the buyer's brief.
+- **Suggestions never silently rewrite a buyer's brief.** The system prompts;
+  a human decides. On the agency side the **agent** is prompted. On the buyer
+  side the **buyer** can be prompted to update their own criteria. **The buyer
+  always has control of their own brief.**
+- **Default boundary: 10% outside the brief**, and configurable — "they can set
+  a scale".
+
+### How it would work
+
+1. **Stretch suggestions — deterministic and explainable.** Rules-based:
+   within 10% above their stretch, one bedroom short, or an adjacent suburb
+   they didn't list. Each states exactly why it's outside. Buildable with no
+   machine learning at all, and it delivers most of the value.
+2. **Learning from behaviour.** The signal is already being collected —
+   `match_feedback` records every shortlist and dismiss today, and in the buyer
+   portal every swipe would be too. Over time a buyer's behaviour diverges from
+   their stated brief.
+3. **Surface the contradiction, don't act on it.** Rather than quietly moving a
+   score: *"Fiona's brief says no pool, but she's inspected three places with
+   pools. Update her brief?"* This directly solves the problem the brief opens
+   with — "buyer criteria are entered once and never updated" — while keeping
+   a human in the loop.
+
+### Open details
+
+- **Who sets the scale?** "They can set a scale" is ambiguous. Could be an
+  agency-wide default, a per-buyer setting an agent adjusts, or — probably the
+  most interesting — a buyer-controlled "how adventurous should we be" slider
+  in the portal. Worth deciding before it's designed.
+- **What does "less common" mean numerically?** One in five results? Capped at
+  two per list? Only when there are too few true matches? Needs a number.
+- **What does a suggestion's fit line say?** A property outside the brief still
+  computes a score and a "Fits X of Y". Whether that reads as a failure or is
+  presented differently is a design question.
+- **Cold start.** Learning needs history. A brand new buyer has none, so the
+  engine has to be useful on day one from the stated brief alone.
+
+### Why Session 2 doesn't foreclose any of it
+
+The matching engine returns a full per-criterion breakdown for every buyer,
+including the near-misses and the reasons they missed. A stretch band, a
+contradiction report, and a learned ranking can all be built on top **without
+changing the engine**.
 
 ---
 
