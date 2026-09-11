@@ -11,7 +11,7 @@ import {
   STALE_AFTER_DAYS,
   STALE_ELIGIBLE_STATUSES,
   type BuyerStatus,
-} from "./domain";
+} from "./domain.ts";
 
 const MS_PER_DAY = 86_400_000;
 

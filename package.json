@@ -16,6 +16,7 @@
     "db:migrate": "node --env-file=.env.local ./node_modules/drizzle-kit/bin.cjs migrate",
     "db:studio": "node --env-file=.env.local ./node_modules/drizzle-kit/bin.cjs studio",
     "db:seed": "node --env-file=.env.local --experimental-strip-types db/seed.ts",
+    "demo:matches": "node --env-file=.env.local --experimental-strip-types scripts/show-matches.ts",
     "setup": "npm run db:push && npm run db:seed"
   },
   "dependencies": {

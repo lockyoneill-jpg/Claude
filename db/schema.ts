@@ -126,6 +126,16 @@ export const buyers = pgTable(
 
     /* Readiness — kept separate from status on purpose (section 6). */
     finance: financeStatusEnum("finance").notNull().default("unknown"),
+    /**
+     * The date the buyer first told us they were pre-approved.
+     *
+     * This supersedes the brief, which had the agent typing in an expiry date.
+     * Pre-approvals here typically run three months, and agents rarely know the
+     * exact expiry — but they do know when the buyer told them. So we record
+     * that, and prompt to re-confirm at three months.
+     */
+    preApprovalRecordedOn: date("pre_approval_recorded_on"),
+    /** The actual expiry, on the rare occasion the agent knows it. */
     preApprovalExpiresOn: date("pre_approval_expires_on"),
     /** Null means we haven't asked yet, which is different from "no". */
     needsToSell: boolean("needs_to_sell"),

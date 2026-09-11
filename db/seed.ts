@@ -42,6 +42,7 @@ import {
   STALE_ELIGIBLE_STATUSES,
   type BuyerStatus,
 } from "../lib/domain.ts";
+import { PRE_APPROVAL_VALID_DAYS as PRE_APPROVAL_DAYS } from "../lib/matching/index.ts";
 
 /* -------------------------------------------------------------------------
  * Helpers
@@ -236,8 +237,22 @@ async function seed() {
       status: spec.status,
       statusChangedAt,
       finance: spec.finance,
+      /*
+       * Pre-approval (see CLAUDE.md — this supersedes the brief).
+       *
+       * We record when the buyer TOLD us, because that is what an agent
+       * actually knows, and prompt to re-confirm at three months. A known
+       * expiry date is the exception, not the rule, so only some buyers here
+       * carry one — that way both paths show up in the demo.
+       */
+      preApprovalRecordedOn:
+        spec.finance === "pre_approved"
+          ? spec.preApprovalInDays === undefined
+            ? createdAt.toISOString().slice(0, 10)
+            : daysFromNow(spec.preApprovalInDays - PRE_APPROVAL_DAYS)
+          : null,
       preApprovalExpiresOn:
-        spec.preApprovalInDays === undefined
+        spec.preApprovalInDays === undefined || i % 2 !== 0
           ? null
           : daysFromNow(spec.preApprovalInDays),
       needsToSell: spec.needsToSell ?? null,
@@ -414,6 +429,12 @@ async function seed() {
     (s) => s.preApprovalInDays !== undefined && s.preApprovalInDays >= 0 && s.preApprovalInDays <= 30,
   ).length;
 
+  const reconfirmCount = insertedBuyers.filter((b, i) => {
+    if (b.finance !== "pre_approved") return false;
+    const spec = BUYER_SPECS[i];
+    return spec.preApprovalInDays !== undefined && spec.preApprovalInDays <= 0;
+  }).length;
+
   console.log("");
   console.log("Seed complete.");
   console.log(`  Buyers                      ${insertedBuyers.length}`);
@@ -421,6 +442,7 @@ async function seed() {
   console.log(`  Properties                  ${insertedProperties.length}`);
   console.log(`  Flagged for a check in      ${staleCount}`);
   console.log(`  Pre-approvals expiring soon ${expiringCount}`);
+  console.log(`  Pre-approvals to re-confirm  ${reconfirmCount}`);
   console.log(`  Streets available           ${STREETS.length}`);
 
   await client.end();

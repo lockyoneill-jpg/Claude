@@ -59,6 +59,46 @@ for later phases are marked in `db/schema.ts`.
 
 ---
 
+## Product decisions made with the founder
+
+These override or extend `BRIEF.md`. The brief is not edited — it is the
+founder's document — so where these conflict with it, **these win**.
+
+### Pre-approval: record when told, re-confirm at three months
+
+**Supersedes section 5 of the brief**, which had the agent typing in an expiry
+date. Agents rarely know the exact expiry, but they do know when the buyer told
+them, and pre-approvals here run about three months.
+
+- `buyers.pre_approval_recorded_on` — the date the buyer first told us
+- `buyers.pre_approval_expires_on` — kept, for the rare case the agent knows it
+- A pre-approval counts as current if an explicit expiry is still in the
+  future, or it was recorded within 90 days. With neither date recorded it
+  counts as current: there is no evidence it lapsed, and guessing against the
+  buyer would quietly push them down the ranking.
+- At three months the buyer appears in a "pre-approvals to re-confirm" list on
+  Today (built in Session 5).
+- `PRE_APPROVAL_VALID_DAYS` in `lib/matching/index.ts` is the single definition
+  of "three months". The seed imports it rather than repeating 90.
+
+### "Fits 5 of 7" counts strictly
+
+A partial is **not** a fit. `metCount` counts only criteria whose result is
+`met`. The fit strip shows the partials in amber right beside the number, so
+the nuance is never lost, and an agent who learns the count is generous would
+stop trusting it.
+
+### Buyers see the advertised price, never the internal guide
+
+The agency decides whether to publish a price; where one exists, buyers see
+`price_display`. `price_guide_min` / `price_guide_max` stay internal. Any
+future buyer-facing reason must be worded against the advertised price or the
+buyer's own budget — never the internal guide, which agent-facing reasons
+reveal exactly. See `LATER.md` for the Statement of Information requirements
+this interacts with.
+
+---
+
 ## Decisions made while building
 
 These weren't spelled out in the brief. None of them are product decisions —
@@ -113,6 +153,45 @@ from status and shown as its own indicators.
 **Check in flag:** last contacted more than 60 days ago, or never contacted and
 created more than 14 days ago. Only active pipeline statuses qualify. Stale
 buyers are **flagged, never excluded from matching**.
+
+---
+
+## Matching engine
+
+`lib/matching` — built to brief section 8. A **pure function**: data in, ranked
+results out, no database access anywhere inside. That is what makes it testable
+without a database, and what lets the same engine drive the agent's fit strip
+and, later, the buyer-facing match score — one scoring system, so the two sides
+can never disagree about the same property.
+
+- `types.ts` — plain input and output shapes, deliberately not the Drizzle rows
+- `criteria.ts` — one scorer per criterion, each returning points and a reason
+- `index.ts` — exclusions, scoring, readiness and ranking
+- `fixtures.ts` — test builders whose defaults are a clean 100% match
+
+Three states matter and are easy to confuse:
+
+| State | Meaning | Effect on score |
+|---|---|---|
+| `null` from a scorer | The buyer never set this criterion | Neither earned nor possible. No reason shown at all |
+| `unknown` | The buyer set it, the **property** has no data | Excluded from the score, reason still shown |
+| `missed` | The buyer set it, the property fails it | Counts against them |
+
+A property with no features recorded scores must-haves as **missed, not
+unknown** — an empty feature list is a real answer, and we can't claim a
+property has a pool because nobody typed one in.
+
+`now` is injected through `MatchContext` rather than read from the clock, so
+tests are deterministic.
+
+**Scale (section 8.5):** matches are computed on page load, fine to roughly
+5,000 profiles. A cache belongs around `matchBuyersToProperty`, keyed on the
+property and buyer set. Nothing inside the engine changes for that.
+
+**Known consequence of the scoring design:** the score measures how well a
+property fits *what the buyer told us*, so a buyer who set only three criteria
+can score 100. The "Fits 3 of 3" beside the score is what reveals the thin
+brief — which is a reason to keep that line prominent, not to change the maths.
 
 ---
 
@@ -183,6 +262,7 @@ Highton-corridor buyers without re-checking that spread.
 | `npm run dev` | Start the app at http://localhost:3000 |
 | `npm run db:push` | Create or update the tables in Supabase |
 | `npm run db:seed` | Load the demo data (clears first, safe to re-run) |
+| `npm run demo:matches` | Print real matches with reasons, in plain English |
 | `npm run setup` | `db:push` then `db:seed` |
 | `npm run db:studio` | Browse the database in a web UI |
 | `npm run typecheck` | TypeScript, no emit |
@@ -196,8 +276,9 @@ Highton-corridor buyers without re-checking that spread.
 - [x] **Session 1** — Setup and data. Next.js + Tailwind + Drizzle, Supabase
       connection with a `.env` walkthrough, full schema, seed script, app shell
       with the four nav items, plain Buyers table.
-- [ ] **Session 2** — Matching engine in `/lib/matching`, built exactly to
-      section 8, with Vitest tests for every rule.
+- [x] **Session 2** — Matching engine in `/lib/matching` built to section 8,
+      with 109 Vitest tests covering every exclude, scoring band, reason and
+      ranking rule. `npm run demo:matches` prints real matches in plain English.
 - [ ] **Session 3** — Buyers: search and filters, buyer page, add/edit,
       notes and activity timeline, Log contact.
 - [ ] **Session 4** — Properties: table, property page with ranked matched
