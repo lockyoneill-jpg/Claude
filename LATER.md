@@ -431,14 +431,48 @@ the brief requires. So the core criteria keep their own segments, and **all
 detailed answers roll up into a single segment** — "Details: 25 of 30" —
 that expands to the individual answers. One more segment, not thirty.
 
+### The vendor form, settled
+
+- **The vendor pre-sets the specification.** They know the house.
+- **The vendor has one hour after submitting to change their answers.** After
+  that the form locks to them.
+- **The agent can overwrite any answer afterwards**, permanently. The agent has
+  the final say.
+- **Access is a unique link per property**, sent to the vendor. No login.
+
+#### The link is a credential — treat it as one
+
+Anyone holding that URL can act as the vendor for that property, so it needs:
+
+- **Scoping to exactly one property.** Never a vendor account, never a list.
+- **An expiry**, and a new link issued rather than the old one revived.
+- **Single purpose.** The form and nothing else.
+- **No buyer data on it, ever.** This is the one that matters most. The vendor
+  is not entitled to the agency's buyer pool, and the whole product promise to
+  the agency is that their buyers are theirs. A vendor form that leaks match
+  counts, buyer names or "14 buyers are interested" would be a serious breach
+  of that promise — and, being a link, it can be forwarded to anyone.
+
+#### Keep both answers, don't overwrite in place
+
+Worth storing the vendor's submitted value **and** the agent's override
+separately, rather than the agent's edit destroying what the vendor said.
+
+- It answers the disagreement question without a rule: the agent's value is
+  what matching uses, and the vendor's is still visible beside it.
+- It gives the agent a reason to look — "the vendor says ducted heating, the
+  agent says split system" is worth a phone call.
+- Under the underquoting rules above, a record of who claimed what about a
+  property is worth having rather than losing.
+
 ### Still open
 
-- **Who owns the vendor's answers** if the vendor and the agent disagree?
-- **Does a vendor form need its own access** (a link, no login), and what stops
-  it becoming a data-entry job the agency ends up doing anyway?
 - **Which attributes, exactly.** "A lot" needs to become a list before this can
   be built, and every one of them needs a fixed set of options on both sides —
-  the same discipline section 7 applies to feature slugs today.
+  the same discipline section 7 applies to feature slugs today. This is the
+  real prerequisite, and it is a product job rather than a technical one.
+- **What stops it becoming a data-entry job** the agency ends up doing anyway
+  when vendors don't fill it in.
 
 ---
 
