@@ -108,11 +108,20 @@ export const FINANCE_STATUSES = [
 ] as const;
 export type FinanceStatus = (typeof FINANCE_STATUSES)[number];
 
+/** Standalone labels, for readiness indicators that carry no other context. */
 export const FINANCE_LABELS: Record<FinanceStatus, string> = {
   unknown: "Finance unknown",
   not_started: "Finance not started",
   pre_approved: "Pre-approved",
   cash: "Cash buyer",
+};
+
+/** For use under a column already headed "Finance", where the word would repeat. */
+export const FINANCE_SHORT_LABELS: Record<FinanceStatus, string> = {
+  unknown: "Unknown",
+  not_started: "Not started",
+  pre_approved: "Pre-approved",
+  cash: "Cash",
 };
 
 export const TIMEFRAMES = [

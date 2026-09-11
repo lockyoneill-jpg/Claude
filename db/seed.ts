@@ -162,6 +162,20 @@ async function seed() {
   const client = postgres(url, { prepare: false, max: 1 });
   const db = drizzle(client);
 
+  // drizzle-kit push can fail and still exit 0, so don't assume the tables are
+  // there just because `npm run setup` got this far.
+  const [{ exists }] = await db.execute<{ exists: boolean }>(
+    sql`select to_regclass('public.agencies') is not null as exists`,
+  );
+
+  if (!exists) {
+    await client.end();
+    throw new Error(
+      "The database tables don't exist yet. Run `npm run db:push` first, " +
+        "then run `npm run db:seed` again.",
+    );
+  }
+
   console.log("Clearing existing data...");
   // Order matters only without cascades; truncating together is simplest.
   await db.execute(
@@ -412,8 +426,15 @@ async function seed() {
   await client.end();
 }
 
-seed().catch((error) => {
+seed().catch((error: unknown) => {
+  // Lead with something readable. The full object only helps if the message
+  // isn't already self-explanatory.
+  console.error("");
   console.error("Seed failed.");
-  console.error(error);
+  console.error(error instanceof Error ? error.message : String(error));
+
+  const cause = error instanceof Error ? error.cause : undefined;
+  if (cause) console.error(cause instanceof Error ? cause.message : String(cause));
+
   process.exit(1);
 });

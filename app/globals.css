@@ -1,26 +1,73 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+ * Design tokens (brief section 10).
+ *
+ * One light palette only. The brief describes a tool that has to be readable
+ * in a car park at midday, so there is no dark mode to keep in step.
+ *
+ * Colour never carries meaning on its own anywhere in the app — every use of
+ * Gum, Wattle or Brick is paired with an icon or a word.
+ * ------------------------------------------------------------------------ */
+
+@theme {
+  /* Surfaces and text */
+  --color-paper: #f5f7f4; /* App background, like survey plan paper */
+  --color-surface: #ffffff; /* Panels and tables */
+  --color-ink: #1c2b33; /* Primary text */
+  --color-muted: #5b6a70; /* Secondary text */
+  --color-rule: #d8ded9; /* Borders and dividers */
+
+  /* Meaning */
+  --color-gum: #2f6b57; /* Primary actions, "met" */
+  --color-wattle: #d9a21b; /* "Partial" and stretch — fill only, never text */
+  --color-brick: #a8432f; /* "Missed", deal breakers, errors */
+
+  /* Tints, for quiet backgrounds that still pass AA against Ink */
+  --color-gum-tint: #e7efeb;
+  --color-wattle-tint: #f8efd6;
+  --color-brick-tint: #f4e3df;
+
+  --font-sans:
+    var(--font-source-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  /* Type scale: 14px table text, 16px body, 20px section headings,
+     28px page titles. */
+  --text-title: 1.75rem;
+  --text-title--line-height: 2.125rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------ */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  /* Tabular figures everywhere, so prices, counts and scores line up in
+     columns without each cell needing to remember (section 10). */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A single, consistent, clearly visible focus ring. */
+:focus-visible {
+  outline: 2px solid var(--color-gum);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Respect the viewer's motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
