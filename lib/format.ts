@@ -49,11 +49,6 @@ export function daysSince(date: Date): number {
   return Math.floor((Date.now() - date.getTime()) / MS_PER_DAY);
 }
 
-/** Whole days from now until a future date. Negative once it has passed. */
-export function daysUntil(date: Date): number {
-  return Math.ceil((date.getTime() - Date.now()) / MS_PER_DAY);
-}
-
 /** "Today", "Yesterday", "9 days ago", "3 months ago", "Never". */
 export function formatLastContacted(date: Date | null): string {
   if (date === null) return "Never";

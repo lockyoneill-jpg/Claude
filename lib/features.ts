@@ -87,7 +87,3 @@ const LABEL_BY_SLUG = new Map<string, string>(
 export function featureLabel(slug: string): string {
   return LABEL_BY_SLUG.get(slug) ?? slug;
 }
-
-export function isFeatureSlug(value: string): value is FeatureSlug {
-  return LABEL_BY_SLUG.has(value);
-}

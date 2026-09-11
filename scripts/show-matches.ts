@@ -18,18 +18,12 @@ import {
   searchProfiles as profilesTable,
 } from "../db/schema.ts";
 import { fitSummary, matchBuyersToProperty } from "../lib/matching/index.ts";
-import type {
-  MatchBuyer,
-  MatchProperty,
-  MatchResult,
-  MatchSearchProfile,
-} from "../lib/matching/types.ts";
+import {
+  toMatchBuyer,
+  toMatchProperty,
+} from "../lib/matching/from-db.ts";
+import type { MatchResult } from "../lib/matching/types.ts";
 import { formatMoney } from "../lib/format.ts";
-
-/** Postgres `date` columns come back as "YYYY-MM-DD" strings. */
-function toDate(value: string | null): Date | null {
-  return value === null ? null : new Date(`${value}T00:00:00Z`);
-}
 
 const RESULT_MARK: Record<string, string> = {
   met: "[ok  ]",
@@ -80,20 +74,7 @@ async function main() {
     process.exit(1);
   }
 
-  const matchProperty: MatchProperty = {
-    id: property.id,
-    addressLine: property.addressLine,
-    suburb: property.suburb,
-    propertyType: property.propertyType,
-    listingStatus: property.listingStatus,
-    priceGuideMin: property.priceGuideMin,
-    priceGuideMax: property.priceGuideMax,
-    beds: property.beds,
-    baths: property.baths,
-    cars: property.cars,
-    landSqm: property.landSqm,
-    features: property.features,
-  };
+  const matchProperty = toMatchProperty(property);
 
   const buyerRows = await db
     .select()
@@ -110,44 +91,16 @@ async function main() {
     .from(feedbackTable)
     .where(eq(feedbackTable.agencyId, property.agencyId));
 
-  const profilesByBuyer = new Map<string, MatchSearchProfile[]>();
+  const profilesByBuyer = new Map<string, typeof profileRows>();
   for (const row of profileRows) {
     const list = profilesByBuyer.get(row.buyerId) ?? [];
-    list.push({
-      id: row.id,
-      name: row.name,
-      active: row.active,
-      suburbs: row.suburbs,
-      alsoConsiderSuburbs: row.alsoConsiderSuburbs,
-      propertyTypes: row.propertyTypes,
-      priceMin: row.priceMin,
-      priceMax: row.priceMax,
-      stretchMax: row.stretchMax,
-      bedsMin: row.bedsMin,
-      bathsMin: row.bathsMin,
-      carsMin: row.carsMin,
-      landMinSqm: row.landMinSqm,
-      landMaxSqm: row.landMaxSqm,
-      mustHaves: row.mustHaves,
-      niceToHaves: row.niceToHaves,
-      dealBreakers: row.dealBreakers,
-    });
+    list.push(row);
     profilesByBuyer.set(row.buyerId, list);
   }
 
-  const matchBuyers: MatchBuyer[] = buyerRows.map((row) => ({
-    id: row.id,
-    firstName: row.firstName,
-    lastName: row.lastName,
-    status: row.status,
-    archivedAt: row.archivedAt,
-    finance: row.finance,
-    preApprovalRecordedOn: toDate(row.preApprovalRecordedOn),
-    preApprovalExpiresOn: toDate(row.preApprovalExpiresOn),
-    timeframe: row.timeframe,
-    lastContactedAt: row.lastContactedAt,
-    profiles: profilesByBuyer.get(row.id) ?? [],
-  }));
+  const matchBuyers = buyerRows.map((row) =>
+    toMatchBuyer(row, profilesByBuyer.get(row.id) ?? []),
+  );
 
   const ranked = matchBuyersToProperty(matchProperty, matchBuyers, feedbackRows);
 

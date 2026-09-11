@@ -62,5 +62,3 @@ export const db = new Proxy({} as Db, {
     return typeof value === "function" ? value.bind(real) : value;
   },
 });
-
-export { schema };
