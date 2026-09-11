@@ -453,17 +453,36 @@ Anyone holding that URL can act as the vendor for that property, so it needs:
   counts, buyer names or "14 buyers are interested" would be a serious breach
   of that promise — and, being a link, it can be forwarded to anyone.
 
-#### Keep both answers, don't overwrite in place
+#### A PIN on top of the link
 
-Worth storing the vendor's submitted value **and** the agent's override
-separately, rather than the agent's edit destroying what the vendor said.
+The agent gives the vendor a **6-digit PIN** out of band, and the link alone is
+useless without it. This is a real improvement: a forwarded link stops being a
+free pass.
 
-- It answers the disagreement question without a rule: the agent's value is
-  what matching uses, and the vendor's is still visible beside it.
-- It gives the agent a reason to look — "the vendor says ducted heating, the
-  agent says split system" is worth a phone call.
-- Under the underquoting rules above, a record of who claimed what about a
-  property is worth having rather than losing.
+It needs **rate limiting on PIN attempts** to be worth anything — six digits is
+a million combinations, which a script gets through quickly if nothing stops
+it. Lock out after a handful of tries per link.
+
+#### Discrepancies are flagged to the agent, never shown to a buyer
+
+Both answers are kept — the vendor's and the agent's override — but this is
+**internal only**. A buyer must never see a disagreement about a property;
+it makes the agency look disorganised and undermines the listing.
+
+So:
+
+- Where the vendor's answer and the agent's differ, **the property is flagged
+  to the agent** as having an unresolved discrepancy.
+- The flag is a **prompt to ring the vendor** and settle it, not a permanent
+  state. It is meant to be cleared.
+- Until it is cleared, one value is authoritative anyway: **the vendor's, or
+  the agent's where the agent has overwritten it.** There is never a moment
+  where matching or display has two values to choose between.
+- Nothing buyer-facing ever renders the discrepancy, only the resolved value.
+
+Keeping both values still pays off: it gives the agent something concrete to
+ask the vendor about, and under the underquoting rules above, a record of who
+claimed what about a property is worth having rather than losing.
 
 ### Still open
 
