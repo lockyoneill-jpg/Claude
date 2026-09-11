@@ -36,7 +36,7 @@ import {
   PROPERTY_SOURCES,
   PROPERTY_TYPES,
   TIMEFRAMES,
-} from "@/lib/domain";
+} from "../lib/domain.ts";
 
 /* -------------------------------------------------------------------------
  * Enums — built from the domain vocabulary so they can never drift
