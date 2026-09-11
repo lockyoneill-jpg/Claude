@@ -23,7 +23,7 @@ export default function Error({
     );
 
   return (
-    <div className="px-4 py-10 md:px-8">
+    <div className="px-8 py-10">
       <div className="max-w-xl rounded-lg border border-rule bg-surface p-6">
         <h1 className="text-title font-semibold text-ink">
           {missingUrl

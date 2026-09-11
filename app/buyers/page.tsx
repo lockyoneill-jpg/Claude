@@ -34,9 +34,8 @@ export default async function BuyersPage() {
       {rows.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="px-4 py-6 md:px-8">
-          <DesktopTable rows={rows} />
-          <MobileList rows={rows} />
+        <div className="px-8 py-6">
+          <BuyersTable rows={rows} />
         </div>
       )}
     </>
@@ -45,7 +44,7 @@ export default async function BuyersPage() {
 
 function EmptyState() {
   return (
-    <div className="px-4 py-10 md:px-8">
+    <div className="px-8 py-10">
       <div className="max-w-lg rounded-lg border border-rule bg-surface p-6">
         <h2 className="text-xl font-semibold text-ink">No buyers yet</h2>
         <p className="mt-2 text-base text-muted">
@@ -61,15 +60,15 @@ function EmptyState() {
 }
 
 /* -------------------------------------------------------------------------
- * Desktop: a real table (section 10)
+ * A real table, not a card grid (section 10). Desktop only.
  * ---------------------------------------------------------------------- */
 
 const TH = "px-3 py-2 text-left text-sm font-semibold text-muted";
 const TD = "px-3 py-2.5 align-top text-sm text-ink";
 
-function DesktopTable({ rows }: { rows: BuyerRow[] }) {
+function BuyersTable({ rows }: { rows: BuyerRow[] }) {
   return (
-    <div className="hidden overflow-hidden rounded-lg border border-rule bg-surface md:block">
+    <div className="overflow-hidden rounded-lg border border-rule bg-surface">
       <table className="w-full border-collapse">
         <caption className="sr-only">
           Buyers, sorted by surname. Shows status, assigned agent, suburbs,
@@ -142,54 +141,5 @@ function DesktopTable({ rows }: { rows: BuyerRow[] }) {
         </tbody>
       </table>
     </div>
-  );
-}
-
-/* -------------------------------------------------------------------------
- * Mobile: the same table as stacked rows (section 10)
- * ---------------------------------------------------------------------- */
-
-function MobileList({ rows }: { rows: BuyerRow[] }) {
-  return (
-    <ul className="divide-y divide-rule overflow-hidden rounded-lg border border-rule bg-surface md:hidden">
-      {rows.map((row) => {
-        const flag = needsCheckIn(row.status, row.lastContactedAt, row.createdAt);
-        return (
-          <li key={row.id} className="p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-base font-semibold text-ink">
-                {row.firstName} {row.lastName}
-              </span>
-              {flag && <CheckInFlag />}
-            </div>
-
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-              <StatusPill status={row.status} />
-              <span className="text-sm">
-                <FinanceLabel finance={row.finance} />
-              </span>
-            </div>
-
-            <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1 text-sm">
-              <dt className="text-muted">Budget</dt>
-              <dd className="text-ink">
-                {formatBudget(row.priceMin, row.priceMax, row.stretchMax)}
-              </dd>
-
-              <dt className="text-muted">Suburbs</dt>
-              <dd className="text-ink">{formatSuburbs(row.suburbs)}</dd>
-
-              <dt className="text-muted">Agent</dt>
-              <dd className="text-ink">{row.agentName ?? "Unassigned"}</dd>
-
-              <dt className="text-muted">Last contacted</dt>
-              <dd className="text-ink">
-                {formatLastContacted(row.lastContactedAt)}
-              </dd>
-            </dl>
-          </li>
-        );
-      })}
-    </ul>
   );
 }

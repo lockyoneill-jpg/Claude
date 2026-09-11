@@ -57,7 +57,11 @@ the buyer's success condition is buying a house and removing the app. Framed as
   is the moment the buyer deletes the app.
 - **QR sign-up at open homes.** The agent displays a QR code at the open home
   and buyers join from there. This extends the Phase 3 QR check-in rather than
-  replacing it.
+  replacing it. This is also **why the agent app is desktop only**: the whole
+  point is that the open home costs the agent no data entry. The buyer
+  registers themselves and completes their profile later, in their own time.
+- **Mobile first**, then tablet, then desktop — the exact opposite of the agent
+  app. A buyer swiping listings is on a phone.
 
 ### Why it matters commercially
 

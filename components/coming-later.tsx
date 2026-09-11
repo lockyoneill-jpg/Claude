@@ -10,7 +10,7 @@ export function ComingLater({
   contains: string;
 }) {
   return (
-    <div className="px-4 py-10 md:px-8">
+    <div className="px-8 py-10">
       <div className="max-w-lg rounded-lg border border-rule bg-surface p-6">
         <h2 className="text-xl font-semibold text-ink">Not built yet</h2>
         <p className="mt-2 text-base text-muted">{contains}</p>

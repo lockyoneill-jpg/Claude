@@ -81,6 +81,24 @@ them, and pre-approvals here run about three months.
 - `PRE_APPROVAL_VALID_DAYS` in `lib/matching/index.ts` is the single definition
   of "three months". The seed imports it rather than repeating 90.
 
+### The agent app is desktop only
+
+**Overrides the brief in three places**: section 1 ("on their phones between
+opens"), section 10 ("bottom bar on mobile"), and the quality floor
+("responsive down to 375px").
+
+The reasoning is a product decision, not a technical one: **we don't want to
+give the agent a task during an open home.** The agent is there to sell. Data
+capture moves to the buyer, who registers themselves via a QR code at the open
+and completes their profile later, in their own time.
+
+- Agent screens target **desktop only**. No phone layouts, no bottom nav.
+  Below about 960px the page scrolls horizontally rather than reflowing.
+- The rest of the quality floor **still stands**: visible keyboard focus,
+  WCAG AA contrast, reduced motion respected.
+- The future **buyer portal is the opposite** — mobile first, then tablet and
+  desktop. See `LATER.md`.
+
 ### "Fits 5 of 7" counts strictly
 
 A partial is **not** a fit. `metCount` counts only criteria whose result is
@@ -214,8 +232,8 @@ Tokens live in `app/globals.css` as Tailwind v4 `@theme` variables.
   word, so it works for colour-blind users.
 - Source Sans 3 throughout. Tabular figures for all numbers (set once on
   `body`). Scale: 14px table, 16px body, 20px section headings, 28px titles.
-- Left nav rail on desktop, bottom bar on mobile. Real tables, not card grids;
-  they become stacked rows on mobile. Content left-aligned.
+- Left nav rail, always visible. Real tables, not card grids. Content
+  left-aligned. Desktop only — see the override above.
 - The **fit strip** is the one memorable element. Everything else stays quiet.
 - Avoid: all-caps and tracked-out eyebrow labels, identical shadowed cards,
   gradients, emoji, arrows appended to button text, meta strings joined with
@@ -229,8 +247,9 @@ off-market, price guide, pre-approval). Buttons say exactly what happens
 next. **Errors say what went wrong and how to fix it, and never apologise.**
 AI tone is neutral, with no cheerful personality.
 
-Quality floor: responsive to 375px, visible keyboard focus, WCAG AA contrast,
-reduced motion respected.
+Quality floor: visible keyboard focus, WCAG AA contrast, reduced motion
+respected. The 375px requirement no longer applies to agent screens — see the
+desktop-only override above.
 
 ---
 

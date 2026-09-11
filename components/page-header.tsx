@@ -15,7 +15,7 @@ export function PageHeader({
   description?: string;
 }) {
   return (
-    <header className="border-b border-rule bg-surface px-4 py-6 md:px-8">
+    <header className="border-b border-rule bg-surface px-8 py-6">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h1 className="text-title font-semibold text-ink">{title}</h1>
         {count && <p className="text-base text-muted">{count}</p>}
