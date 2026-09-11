@@ -359,17 +359,86 @@ one plain line per criterion. Richer data serves that. More rules for their own
 sake work against it, because every extra rule is another thing an agent has to
 trust.
 
-### Questions to settle before designing it
+### The design, settled
 
-- **How many attributes, realistically?** Ten changes the UI. Eighty changes
-  the product.
-- **Does an unanswered attribute ever exclude a buyer?** Recommendation: never.
-  Only ever a tie-breaker, or the empty-data problem above bites.
-- **What weight does the nitty-gritty carry** against the section 8.2 table?
-  If a 900mm oven can outweigh a suburb, something has gone wrong.
+The founder confirmed: **a lot** of attributes, an unanswered attribute must
+**never** exclude a buyer, and — the core requirement — *"I'm happy with a house
+that has either 900mm or 600mm, doesn't bother me. If their criteria is more
+than one, it needs to show them either option."*
+
+Weighting was delegated ("I don't know, solve this"). Four rules answer it.
+
+#### 1. An attribute is ONE criterion, however many values the buyer accepts
+
+The unit of matching is the **question**, not the answer. "Oven size" is one
+criterion. A buyer who accepts 900mm **or** 600mm has one criterion satisfied
+by either value:
+
+```
+Buyer  — oven size: [900mm, 600mm]     one criterion
+Buyer  — cooktop:   [gas]              one criterion
+House  — oven size: 600mm              satisfies the first
+House  — cooktop:   induction          misses the second
+```
+
+Satisfied when the property's value is **in the accepted set**. So ticking more
+options makes a criterion *easier to satisfy* and never dilutes or inflates the
+score — which is exactly the behaviour the founder described. It also gives the
+buyer a real reason to tick everything they'd accept, rather than guessing that
+being picky helps them.
+
+#### 2. Four levels per question, set by the buyer
+
+| Level | Effect |
+|---|---|
+| Deal breaker | Hard exclude, as today |
+| Must have | Joins the must-haves pool |
+| Nice to have | Joins the nice-to-haves pool |
+| **Don't care** (unanswered) | Never scored, never excludes — the default |
+
+"Don't care" being the default is what keeps a long form survivable: a buyer can
+answer three questions or forty and neither is penalised.
+
+#### 3. Weighting: don't invent new points
+
+Detailed answers flow into the **existing** must-haves (15) and nice-to-haves
+(5) pools from brief section 8.2, split evenly as they already are. The
+100-point structure is untouched.
+
+This answers the question directly: **a 900mm oven can never outweigh the
+suburb**, because location's 25 points are not up for grabs. Location and price
+keep exactly the weight the brief gives them, no matter how detailed the
+specification gets.
+
+It also behaves sensibly as detail grows. A buyer with 30 must-haves where the
+property matches 25 earns 12.5 of 15. A buyer with 2 must-haves where it
+matches both earns the full 15 — correctly, because the property genuinely
+suits the second buyer better.
+
+#### 4. Unknown attributes leave the pool entirely
+
+Where the property has no answer recorded for an attribute, that attribute drops
+out of **both** the numerator and the denominator — the 15 points split only
+across the must-haves the property can actually answer. This is the same rule
+the engine already applies to a missing price guide, and it is what makes the
+empty-data risk survivable: a sparsely filled property scores on what is known,
+and is never marked down for silence.
+
+#### The fit strip stays readable
+
+The strip cannot have forty segments and still be glanceable on a phone, which
+the brief requires. So the core criteria keep their own segments, and **all
+detailed answers roll up into a single segment** — "Details: 25 of 30" —
+that expands to the individual answers. One more segment, not thirty.
+
+### Still open
+
 - **Who owns the vendor's answers** if the vendor and the agent disagree?
 - **Does a vendor form need its own access** (a link, no login), and what stops
   it becoming a data-entry job the agency ends up doing anyway?
+- **Which attributes, exactly.** "A lot" needs to become a list before this can
+  be built, and every one of them needs a fixed set of options on both sides —
+  the same discipline section 7 applies to feature slugs today.
 
 ---
 
