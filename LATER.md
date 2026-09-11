@@ -96,11 +96,14 @@ None of these are Phase 1 work. Listed so they aren't a surprise later.
 
 ### Product questions to settle before designing it
 
-- **Buyer-facing reasons leak the price guide.** The brief is explicit that
-  `price_guide_min` / `price_guide_max` are internal and "buyers never see
-  this". But an agent-facing reason like "$40,000 over budget, within their
-  stretch" reveals the guide exactly. A buyer-facing match score needs its own
-  reason wording, or reasons hidden entirely on the buyer side.
+- **Buyer-facing reasons and the price guide — answered.** The agency decides
+  whether to publish a price; where one exists, buyers see it. That means
+  buyers see `price_display`, while `price_guide_min` / `price_guide_max` stay
+  internal. Agent-facing reasons like "$40,000 over budget, within their
+  stretch" still reveal the internal guide exactly, so **buyer-facing reasons
+  need their own wording** — phrased against the advertised price, or against
+  the buyer's own budget, never against the internal guide. See the pricing
+  disclosure section above.
 - **Does a swipe change the buyer's agency-side status?** A no-swipe is
   feedback on one property; it shouldn't move someone out of the pipeline.
 - **What does the agent see when a buyer goes quiet in the app?** Engagement is
@@ -130,6 +133,61 @@ None of these are Phase 1 work. Listed so they aren't a surprise later.
 - **`npm audit` advisory on esbuild** inside drizzle-kit's dependency tree.
   Dev-only, not reachable in our usage, and `--force` breaks drizzle-kit.
   Revisit when drizzle-kit updates its dependency.
+
+---
+
+## Pricing disclosure and the Statement of Information
+
+The founder's position: **it's up to the agency whether to add a price, and
+buyers can see it if a price is available.** They also flagged that a Statement
+of Information is mandatory in Victoria and coming to NSW.
+
+Checked rather than written from memory, because a wrong compliance note is
+worse than no note. **This is not legal advice.** Verify with the agency's own
+legal adviser, the REIV or NSW Fair Trading before relying on any of it.
+
+### Victoria
+
+A Statement of Information is mandatory for residential sales. It must carry:
+
+- an **indicative selling price** — a single figure, or a range no wider than
+  10% of the lower figure
+- **three comparable sales** with address, price and date. Metro: sold within
+  the last 6 months and within 2km. Regional: within 18 months and 5km
+- the **suburb median price**, covering a period of 3 to 12 months and no more
+  than 6 months old
+- if three comparable sales don't exist, a statement saying so
+
+The indicative price must not be below the agent's own estimate, the vendor's
+asking price, or any written offer already rejected on price.
+
+### NSW
+
+Further along than "soon". The Property and Stock Agents Amendment
+(Underquoting and Other Agent Conduct) Act 2026 has passed. The first tranche
+commenced **29 June 2026**, with the remainder expected late 2026. Residential
+sale advertising must carry a selling price or price range (sale signs and
+prescribed exempt classes aside), and agents must produce a Statement of
+Information showing how the price was arrived at. Penalties rise from $22,000
+to $110,000 or three times the agent's commission, whichever is higher.
+
+### What this means for us
+
+- **The schema already separates the two numbers correctly.** `price_display`
+  is the advertised figure a buyer sees; `price_guide_min` / `price_guide_max`
+  are internal and used only for matching. The brief's "buyers never see this"
+  applies to the internal guide, not the advertised price — which is exactly
+  what the founder's answer confirms. No change needed.
+- **Worth the founder taking advice on:** an internal price guide sitting well
+  below the advertised indicative price is precisely the record an underquoting
+  investigation would ask for. Agents legitimately hold internal estimates, but
+  storing them in a system creates a discoverable trail across every listing.
+  That is a business risk to get advice on, not a technical problem to fix.
+- **Nothing stores Statement of Information data today.** A real SOI needs the
+  three comparable sales and the suburb median, which no table holds. That is
+  Phase 2 work at the earliest — REAXML feeds carry some of it.
+- **Phase 6 impact:** if the buyer portal shows listings with prices, that is
+  advertising, and the disclosure rules attach to it.
 
 ---
 
