@@ -267,6 +267,112 @@ changing the engine**.
 
 ---
 
+## Detailed property specification, and matching on the nitty-gritty
+
+The founder wants matching to go much deeper than the 26 feature slugs in brief
+section 7: **"900mm oven, wall oven, gas, etc etc. Nitty gritty that the owner
+would know."**
+
+Two ways to collect it:
+
+- **A form sent to the vendor.** They know their own house better than the
+  agent does, and they are motivated — they want it sold. Costs the agency
+  nothing but the send.
+- **A detailed property specification completed by the agent or admin.**
+
+And critically: **buyers answer the same questions with the same options** when
+setting up their criteria, with the buyer told to **select more than one option
+wherever they'd be happy with more than one**.
+
+**Not Phase 1.** Section 7's fixed slug list stands for now.
+
+### The instinct is right
+
+Shared vocabulary on both sides is exactly why section 7 exists — the same
+words for the buyer and the property, so matching is reliable. This extends a
+principle that's already in the brief rather than fighting it.
+
+It also answers a real problem visible in the Session 2 output: nineteen buyers
+match 18 Kerrisdale Court and twelve of them score above 92. **The engine can
+rank them but it can't really separate them.** Nitty-gritty detail is exactly
+what would break those ties.
+
+### The finding that matters: today's model can't express "any of these"
+
+This is the concrete blocker, and it is worth knowing before anything is
+designed.
+
+`must_haves` is an **AND** list — every slug in it has to be present. The
+founder's model needs **OR within an attribute**: "a 600mm *or* a 900mm oven is
+fine, but it must be gas."
+
+Namespacing slugs (`oven_900mm`, `oven_600mm`) does **not** solve it. Putting
+both in `must_haves` means "must have both ovens". Putting them in
+`nice_to_haves` scores half marks for getting exactly what they asked for.
+
+So this needs a different shape — roughly:
+
+- `property_attributes` — one row per property per attribute, with its value
+- `profile_attribute_preferences` — one row per profile per attribute, with the
+  **set of values the buyer would accept**, and whether it's a must or a nice
+
+That is a new table, not more slugs. It does not require changing anything in
+Phase 1, but it does mean this can't be bolted onto `features text[]` later.
+
+### The risk worth taking seriously
+
+**More fields do not mean better matching if the fields are empty.** The engine
+already treats missing property data as `unknown` and excludes it from the
+score. Scale that up: if fifty attributes exist and most properties have five
+filled in, most criteria go unknown, scores get noisier, and the matching gets
+*worse* while looking more sophisticated.
+
+There is also a tension with the brief's own diagnosis. It opens by saying
+criteria are **too rigid** and that real briefs sound like "walk to school, no
+main road, would stretch for a pool". A fifty-question form is more rigid, not
+less. And a buyer signing up from a QR code at an open home will not answer
+fifty questions.
+
+### The strong version of this idea
+
+1. **Detail as a tie-breaker, not a gate.** Keep the current criteria deciding
+   who matches at all. Let the nitty-gritty separate the twelve buyers who all
+   score 92+. That way empty data costs nothing — it just doesn't break a tie.
+2. **Lead with the vendor form.** It is the best part of the idea: free, richer
+   data from the person who actually knows, and a reason to talk to the vendor.
+   Worth doing even if the buyer side stays simple.
+3. **Progressive on the buyer side.** A rough brief in thirty seconds at the
+   open home, then optional refinement later — in the portal, where a buyer
+   who is genuinely invested will happily answer more. Never fifty questions
+   up front.
+4. **Let swiping fill it in.** The portal's yes/no data infers preferences
+   without asking, which is the same signal the recommendation layer needs.
+5. **Cross-check with REAXML.** Phase 2's feed already carries structured
+   property attributes. Worth seeing what it gives for free before asking
+   vendors to type it.
+
+### A note on "detailed and complex"
+
+Complexity is a cost, not a feature. The goal is an engine that **discriminates**
+— that can tell near-identical buyers apart — and that still explains itself in
+one plain line per criterion. Richer data serves that. More rules for their own
+sake work against it, because every extra rule is another thing an agent has to
+trust.
+
+### Questions to settle before designing it
+
+- **How many attributes, realistically?** Ten changes the UI. Eighty changes
+  the product.
+- **Does an unanswered attribute ever exclude a buyer?** Recommendation: never.
+  Only ever a tie-breaker, or the empty-data problem above bites.
+- **What weight does the nitty-gritty carry** against the section 8.2 table?
+  If a 900mm oven can outweigh a suburb, something has gone wrong.
+- **Who owns the vendor's answers** if the vendor and the agent disagree?
+- **Does a vendor form need its own access** (a link, no login), and what stops
+  it becoming a data-entry job the agency ends up doing anyway?
+
+---
+
 ## Questions for the founder
 
 ### Open: can a buyer and an agent disagree about the same property?
